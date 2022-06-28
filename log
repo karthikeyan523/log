@@ -1,0 +1,57 @@
+#!/bin/bash
+#note : this program is only for view syslog like error kernal log file etc
+#
+echo "create by keyan"
+#
+read -p "Do you want to continu this procces [Y/n] : " log_view
+function syslog{
+	echo "syslog"
+	cd /var/log/
+	cat -n * #total log
+	cd apache2
+	cat -n * #total log
+	cat error.log #apache2 error log
+}
+
+function eventlog(){
+	echo "event view"
+	cd ..
+	cat dmesg
+	tail syslog
+}
+
+function vierlog(){
+	echo "fire wall restart"
+	sudo systemctl restart ssh
+	journal -u ssh
+	journal -u apache2
+}
+
+function rsyslogg(){
+	cd
+	sudo yum install rsyslog
+	cd /etc/rsyslog.conf
+	sudo systemctl status rsyslog.services
+	sudo systemctl restart rsyslog.services
+	sudo systemctl status rsyslog.services
+}
+
+case $log_view in
+
+Y|y)
+echo "you click yse"
+syslog
+eventlog
+vierlog
+rsyslogg
+;;
+
+N|n)
+echo "exit"
+;;
+
+*)
+echo "plz select any one [Y/n]"
+;;
+
+esac
